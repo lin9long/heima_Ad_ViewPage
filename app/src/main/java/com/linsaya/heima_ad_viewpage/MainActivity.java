@@ -25,14 +25,52 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private View mPointview;
     private List<View> mPointViews;
     private int lastposition = 0;
+    public boolean isAuto = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //初始化UI
         initUi();
+        //初始化数据
         initData();
+        //初始化viewpage适配器
         initAdapter();
+        //初始化自动,图片自动轮播
+        initauto();
+    }
+
+    private void initauto() {
+        isAuto = true;
+
+        new Thread() {
+            @Override
+            public void run() {
+                while (isAuto) {
+                    try {
+                        Thread.sleep(2000);
+                        System.out.println("子线程睡眠2秒了。。。。。");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            vp_ad.setCurrentItem(vp_ad.getCurrentItem() + 1);
+                        }
+
+                    });
+                }
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        isAuto = false;
+        super.onDestroy();
     }
 
     private void initAdapter() {
